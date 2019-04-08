@@ -1,0 +1,4 @@
+*.swp
+
+# vscode artifacts
+*.vscode*
