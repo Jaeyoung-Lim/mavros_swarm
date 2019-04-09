@@ -12,6 +12,9 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh, const ros::NodeHandle& n
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &SingleVehicle::statusloopCallback, this); // Define timer for constant loop rate
  
   setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/uav1/mavros/setpoint_raw/local", 1);
+  
+  arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>("/mavros/cmd/arming");
+  set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/mavros/set_mode");
 }
 
 SingleVehicle::~SingleVehicle() {
@@ -24,7 +27,25 @@ void SingleVehicle::cmdloopCallback(const ros::TimerEvent& event){
 }
 
 void SingleVehicle::statusloopCallback(const ros::TimerEvent& event){
-
+    if(sim_enable_){
+    // Enable OFFBoard mode and arm automatically
+    // This is only run if the vehicle is simulated
+    arm_cmd_.request.value = true;
+    offb_set_mode_.request.custom_mode = "OFFBOARD";
+    if( current_state_.mode != "OFFBOARD" && (ros::Time::now() - last_request_ > ros::Duration(5.0))){
+      if( set_mode_client_.call(offb_set_mode_) && offb_set_mode_.response.mode_sent){
+        ROS_INFO("Offboard enabled");
+      }
+      last_request_ = ros::Time::now();
+    } else {
+      if( !current_state_.armed && (ros::Time::now() - last_request_ > ros::Duration(5.0))){
+        if( arming_client_.call(arm_cmd_) && arm_cmd_.response.success){
+          ROS_INFO("Vehicle armed");
+        }
+        last_request_ = ros::Time::now();
+      }
+    }
+  }
 }
 
 void SingleVehicle::PublishSetpoint(){
