@@ -14,10 +14,12 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
   for(int i = 0; i < num_vehicles_; i++){
-    vehicle_vector_.emplace_back(nh_, nh_private_);
+    vehicle_vector_.emplace_back(nh_, nh_private_, "uav" + std::string(i+1));
   }
-  
+
+  formation_center_ << 0.0, 0.0, 2.0;
 }
+
 FormationController::~FormationController() {
   //Destructor
 }

@@ -31,12 +31,13 @@ class SingleVehicle
     mavros_msgs::SetMode offb_set_mode_;
     mavros_msgs::CommandBool arm_cmd_;
 
-
-    Eigen::Vector3d reference_pos_;
-    Eigen::Vector3d reference_vel_;
+    Eigen::Vector3d reference_pos_; // Vehicle position in world coordinate
+    Eigen::Vector3d reference_vel_; // Vehicle velocity in world coordinate
+    Eigen::Vector3d vrb_vertexpos_; // Vehicle position in virtual rigid body coordinate
 
     bool sim_enable_;
-    
+    std::string vehicle_name_;
+
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);
     void PublishSetpoint();
@@ -45,6 +46,7 @@ class SingleVehicle
     SingleVehicle(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
     virtual ~SingleVehicle();
     void SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity);
+    void SetNameSpace(std::string vehicle_name);
     
 };
 #endif
