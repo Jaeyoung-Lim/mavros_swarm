@@ -14,10 +14,13 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
   for(int i = 0; i < num_vehicles_; i++){
-    vehicle_vector_.emplace_back(nh_, nh_private_, "uav" + std::string(i+1));
+    vehicle_vector_.emplace_back(nh_, nh_private_, "uav" + std::to_string(i+1));
   }
 
-  formation_center_ << 0.0, 0.0, 2.0;
+  formation_pos_ << 0.0, 0.0, 2.0;
+  formation_ang_vel_ << 0.0, 0.0, 0.0;
+  formation_linear_vel_ << 0.0, 0.0, 0.5;
+
 }
 
 FormationController::~FormationController() {
@@ -25,9 +28,79 @@ FormationController::~FormationController() {
 }
 
 void FormationController::cmdloopCallback(const ros::TimerEvent& event){
+  UpdateVrbVertexStates();
 
 }
 
 void FormationController::statusloopCallback(const ros::TimerEvent& event){
 
+}
+
+void FormationController::UpdateVrbVertexStates(){
+  //Update vertex states on virtual rigid body
+  for(int i = 0; i < num_vehicles_; i++){
+    Eigen::Vector3d vehicle_pos;
+    Eigen::Vector3d vehicle_vel;
+    Eigen::Vector3d vertex_position;
+
+    vertex_position = vehilce_vector_[i].GetVertexPosition();
+    CalculateVertexStates(vertex_position, vehicle_pos, vehicle_vel);
+    vehicle_vector_[i].SetReferenceState(vehicle_pos, vehicle_vel);
+  }
+}
+
+void FormationController::CalculateVertexStates(Eigen::Vector3d vrb_position, Eigen::Vector3d &pos, Eigen::Vector3d &vel){
+  Eigen::Matrix3d formation_rotmat;
+
+  formation_rotmat = quat2RotMatrix(formation_att_);
+  pos = formation_pos_ + formation_rotmat * vrb_position.transpose();
+  vel = formation_linear_vel_ + formation_angular_vel_.cross(vrb_position);
+
+}
+
+Eigen::Matrix3d FormationController::quat2RotMatrix(Eigen::Vector4d q){
+  Eigen::Matrix3d rotmat;
+  rotmat << q(0) * q(0) + q(1) * q(1) - q(2) * q(2) - q(3) * q(3),
+    2 * q(1) * q(2) - 2 * q(0) * q(3),
+    2 * q(0) * q(2) + 2 * q(1) * q(3),
+
+    2 * q(0) * q(3) + 2 * q(1) * q(2),
+    q(0) * q(0) - q(1) * q(1) + q(2) * q(2) - q(3) * q(3),
+    2 * q(2) * q(3) - 2 * q(0) * q(1),
+
+    2 * q(1) * q(3) - 2 * q(0) * q(2),
+    2 * q(0) * q(1) + 2 * q(2) * q(3),
+    q(0) * q(0) - q(1) * q(1) - q(2) * q(2) + q(3) * q(3);
+  return rotmat;
+}
+
+Eigen::Vector4d FormationController::rot2Quaternion(Eigen::Matrix3d R){
+  Eigen::Vector4d quat;
+  double tr = R.trace();
+  if (tr > 0.0) {
+    double S = sqrt(tr + 1.0) * 2.0; // S=4*qw
+    quat(0) = 0.25 * S;
+    quat(1) = (R(2, 1) - R(1, 2)) / S;
+    quat(2) = (R(0, 2) - R(2, 0)) / S;
+    quat(3) = (R(1, 0) - R(0, 1)) / S;
+  } else if ((R(0, 0) > R(1, 1)) & (R(0, 0) > R(2, 2))) {
+    double S = sqrt(1.0 + R(0, 0) - R(1, 1) - R(2, 2)) * 2.0; // S=4*qx
+    quat(0) = (R(2, 1) - R(1, 2)) / S;
+    quat(1) = 0.25 * S;
+    quat(2) = (R(0, 1) + R(1, 0)) / S;
+    quat(3) = (R(0, 2) + R(2, 0)) / S;
+  } else if (R(1, 1) > R(2, 2)) {
+    double S = sqrt(1.0 + R(1, 1) - R(0, 0) - R(2, 2)) * 2.0; // S=4*qy
+    quat(0) = (R(0, 2) - R(2, 0)) / S;
+    quat(1) = (R(0, 1) + R(1, 0)) / S;
+    quat(2) = 0.25 * S;
+    quat(3) = (R(1, 2) + R(2, 1)) / S;
+  } else {
+    double S = sqrt(1.0 + R(2, 2) - R(0, 0) - R(1, 1)) * 2.0; // S=4*qz
+    quat(0) = (R(1, 0) - R(0, 1)) / S;
+    quat(1) = (R(0, 2) + R(2, 0)) / S;
+    quat(2) = (R(1, 2) + R(2, 1)) / S;
+    quat(3) = 0.25 * S;
+  }
+  return quat;
 }

@@ -47,6 +47,7 @@ class SingleVehicle
     virtual ~SingleVehicle();
     void SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity);
     void SetNameSpace(std::string vehicle_name);
+    Eigen::Vector3d GetVertexPosition();
     
 };
 #endif
