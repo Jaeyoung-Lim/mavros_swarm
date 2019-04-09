@@ -18,8 +18,12 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   }
 
   formation_pos_ << 0.0, 0.0, 2.0;
-  formation_ang_vel_ << 0.0, 0.0, 0.0;
+  formation_angular_vel_ << 0.0, 0.0, 0.0;
   formation_linear_vel_ << 0.0, 0.0, 0.5;
+
+  vehicle_vector_[0].SetVertexPosition(Eigen::Vector3d(1.0, 0.0, 0.0));
+  vehicle_vector_[1].SetVertexPosition(Eigen::Vector3d(0.0, 1.0, 0.0));
+  vehicle_vector_[2].SetVertexPosition(Eigen::Vector3d(-1.0, 0.0, 0.0));
 
 }
 
@@ -43,7 +47,7 @@ void FormationController::UpdateVrbVertexStates(){
     Eigen::Vector3d vehicle_vel;
     Eigen::Vector3d vertex_position;
 
-    vertex_position = vehilce_vector_[i].GetVertexPosition();
+    vertex_position = vehicle_vector_[i].GetVertexPosition();
     CalculateVertexStates(vertex_position, vehicle_pos, vehicle_vel);
     vehicle_vector_[i].SetReferenceState(vehicle_pos, vehicle_vel);
   }
@@ -53,7 +57,7 @@ void FormationController::CalculateVertexStates(Eigen::Vector3d vrb_position, Ei
   Eigen::Matrix3d formation_rotmat;
 
   formation_rotmat = quat2RotMatrix(formation_att_);
-  pos = formation_pos_ + formation_rotmat * vrb_position.transpose();
+  pos = formation_pos_ + formation_rotmat * vrb_position;
   vel = formation_linear_vel_ + formation_angular_vel_.cross(vrb_position);
 
 }

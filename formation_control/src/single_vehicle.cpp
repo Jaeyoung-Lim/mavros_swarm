@@ -77,4 +77,9 @@ void SingleVehicle::SetNameSpace(std::string vehicle_name){
 
 }
 
+void SingleVehicle::SetVertexPosition(Eigen::Vector3d position){
+    vrb_vertexpos_ = position;
+
+}
+
 Eigen::Vector3d SingleVehicle::GetVertexPosition(){ return vrb_vertexpos_; }
