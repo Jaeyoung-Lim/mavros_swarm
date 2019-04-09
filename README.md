@@ -3,7 +3,7 @@
 
 MAVROS based fleet trajectory control for swarming.
 
-![multiuav sitl](mavros_swarm/resources/sitl_multi_uav.png)
+![multiuavsitl](mavros_swarm/resources/sitl_multi_uav.png)
 
 
 This project will come soon. For now, you can start the px4 multi uav sitl on gazebo using the following command.
