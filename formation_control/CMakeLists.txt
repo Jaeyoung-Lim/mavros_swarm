@@ -12,7 +12,8 @@ add_definitions(-std=c++11)
 # LIBRARIES #
 #############
 cs_add_library(${PROJECT_NAME}
-  src/formation_control.cpp 
+  src/formation_control.cpp
+  src/single_vehicle.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
