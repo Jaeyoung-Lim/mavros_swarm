@@ -11,3 +11,6 @@ This project will come soon. For now, you can start the px4 multi uav sitl on ga
 ```
 roslaunch formation_control sitl_multiuav_swarm.launch
 ```
+
+# Contact
+Jaeyoung Lim jalim@student.ethz.ch
