@@ -48,18 +48,23 @@ void SingleVehicle::statusloopCallback(const ros::TimerEvent& event){
   }
 }
 
+void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity){
+  reference_pos_ = ref_position;
+  reference_vel_ = ref_velocity;
+
+}
+
 void SingleVehicle::PublishSetpoint(){
   mavros_msgs::PositionTarget msg;
   msg.header.stamp = ros::Time::now();
   msg.header.frame_id = "map";
   msg.type_mask = 64;
-  msg.position.x = 0.0;
-  msg.position.y = 0.0;
-  msg.position.z = 0.0;
-  msg.velocity.x = 0.0;
-  msg.velocity.y = 0.0;
-  msg.velocity.z = 0.0;
+  msg.position.x = reference_pos_(0);
+  msg.position.y = reference_pos_(1);
+  msg.position.z = reference_pos_(2);
+  msg.velocity.x = reference_vel_(0);
+  msg.velocity.y = reference_vel_(1);
+  msg.velocity.z = reference_vel_(2);
 
   setpoint_publisher_.publish(msg);
-
 }

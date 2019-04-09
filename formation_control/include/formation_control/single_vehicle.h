@@ -8,6 +8,7 @@
 #include "mavros_msgs/State.h"
 #include "mavros_msgs/SetMode.h"
 #include "mavros_msgs/CommandBool.h"
+#include "Eigen/Dense"
 
 
 class SingleVehicle
@@ -23,15 +24,18 @@ class SingleVehicle
 
     ros::Timer cmdloop_timer_;
     ros::Timer statusloop_timer_;
-    
+
     ros::Time last_request_;
 
     mavros_msgs::State current_state_;
     mavros_msgs::SetMode offb_set_mode_;
     mavros_msgs::CommandBool arm_cmd_;
 
-    bool sim_enable_;
 
+    Eigen::Vector3d reference_pos_;
+    Eigen::Vector3d reference_vel_;
+
+    bool sim_enable_;
     
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);
@@ -39,9 +43,8 @@ class SingleVehicle
 
   public:
     SingleVehicle(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private);
-    virtual ~SingleVehicle();    
+    virtual ~SingleVehicle();
+    void SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity);
     
 };
-
-
 #endif
