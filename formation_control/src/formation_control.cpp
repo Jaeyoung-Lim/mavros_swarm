@@ -7,11 +7,16 @@ using namespace std;
 //Constructor
 FormationController::FormationController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
   nh_(nh),
-  nh_private_(nh_private) {
+  nh_private_(nh_private),
+  num_vehicles_(3) {
 
-  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.01), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
+  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.03), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
+  for(int i = 0; i < num_vehicles_; i++){
+    vehicle_vector_.emplace_back(nh_, nh_private_);
+  }
+  
 }
 FormationController::~FormationController() {
   //Destructor
