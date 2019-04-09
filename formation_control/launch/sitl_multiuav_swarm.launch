@@ -1,0 +1,5 @@
+<launch>
+  <include file="$(find px4)/launch/multi_uav_mavros_sitl.launch">
+  </include>
+
+</launch>
