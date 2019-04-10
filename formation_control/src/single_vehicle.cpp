@@ -62,11 +62,6 @@ void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vecto
 }
 
 void SingleVehicle::PublishSetpoint(){
-  /**
-  * @todo Fix segfault
-  * @body Currently this results in a segfault
-  */
-
   mavros_msgs::PositionTarget msg;
   msg.header.stamp = ros::Time::now();
   msg.header.frame_id = "map";
