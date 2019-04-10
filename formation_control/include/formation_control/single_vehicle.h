@@ -36,6 +36,7 @@ class SingleVehicle
     Eigen::Vector3d vrb_vertexpos_; // Vehicle position in virtual rigid body coordinate
 
     bool sim_enable_;
+    double loop_dt_;
     std::string vehicle_name_;
 
     void cmdloopCallback(const ros::TimerEvent& event);
