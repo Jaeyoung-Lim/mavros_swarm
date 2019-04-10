@@ -5,30 +5,32 @@
 using namespace Eigen;
 using namespace std;
 //Constructor
-FormationController::FormationController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
-  nh_(nh),
+FormationController::FormationController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private)
+: nh_(nh),
   nh_private_(nh_private),
   num_vehicles_(3),
-  loop_dt_(0.01) {
+  loop_dt_(0.01){
 
   cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
-  for(int i = 0; i < num_vehicles_; i++){
+  vehicle_vector_.resize(num_vehicles_);
+  for(auto i = 0; i < num_vehicles_; i++){
+    std::string vehicle_name = "uav" + std::to_string(i+1);
     /**
     * @todo Assign arbitrary name spaces
     * @body We need to be able to assign arbitrary name spaces
     */
-    vehicle_vector_.emplace_back(nh_, nh_private_, "uav" + std::to_string(i+1));
+    vehicle_vector_[i].reset(new SingleVehicle(nh_, nh_private_, vehicle_name));
   }
 
   formation_pos_ << 0.0, 0.0, 2.0;
   formation_angular_vel_ << 0.0, 0.0, 0.0;
   formation_linear_vel_ << 0.0, 0.0, 0.5;
 
-  vehicle_vector_[0].SetVertexPosition(Eigen::Vector3d(1.0, 0.0, 0.0));
-  vehicle_vector_[1].SetVertexPosition(Eigen::Vector3d(0.0, 1.0, 0.0));
-  vehicle_vector_[2].SetVertexPosition(Eigen::Vector3d(-1.0, 0.0, 0.0));
+  vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(1.0, 0.0, 0.0));
+  vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(0.0, 1.0, 0.0));
+  vehicle_vector_[2]->SetVertexPosition(Eigen::Vector3d(-1.0, 0.0, 0.0));
 
 }
 
@@ -48,12 +50,12 @@ void FormationController::cmdloopCallback(const ros::TimerEvent& event){
   Eigen::Vector3d omega = formation_angular_vel_;
 
   Qx <<      0.0, -omega(0), -omega(1), -omega(2),
-        omega(0),       0.0,  omega(2), -omega(1),
-        omega(1), -omega(2),       0.0,  omega(0),
-        omega(2),  omega(1), -omega(0),       0.0;
+         omega(0),       0.0,  omega(2), -omega(1),
+         omega(1), -omega(2),       0.0,  omega(0),
+         omega(2),  omega(1), -omega(0),       0.0;
 
   formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
-  d_formation_att = Qx * formation_att_;
+    d_formation_att = Qx * formation_att_;
   formation_att_ = formation_att_ + d_formation_att * loop_dt_;
   /**
   * @todo Implement boid controller
@@ -75,9 +77,9 @@ void FormationController::UpdateVrbVertexStates(){
     Eigen::Vector3d vehicle_vel;
     Eigen::Vector3d vertex_position;
 
-    vertex_position = vehicle_vector_[i].GetVertexPosition();
+    vertex_position = vehicle_vector_[i]->GetVertexPosition();
     CalculateVertexStates(vertex_position, vehicle_pos, vehicle_vel);
-    vehicle_vector_[i].SetReferenceState(vehicle_pos, vehicle_vel);
+    vehicle_vector_[i]->SetReferenceState(vehicle_pos, vehicle_vel);
   }
 }
 

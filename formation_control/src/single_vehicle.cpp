@@ -14,10 +14,10 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   cmdloop_timer_ = nh_.createTimer(ros::Duration(0.03), &SingleVehicle::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &SingleVehicle::statusloopCallback, this); // Define timer for constant loop rate
 
-  setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>(vehicle_name_ + "/mavros/setpoint_raw/local", 1);
+  setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
 
-  arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>(vehicle_name_ + "/mavros/cmd/arming");
-  set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>(vehicle_name_ + "/mavros/set_mode");
+  arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>("/"+vehicle_name_+"/mavros/cmd/arming");
+  set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
 }
 
 SingleVehicle::~SingleVehicle() {
@@ -41,7 +41,7 @@ void SingleVehicle::statusloopCallback(const ros::TimerEvent& event){
     offb_set_mode_.request.custom_mode = "OFFBOARD";
     if( current_state_.mode != "OFFBOARD" && (ros::Time::now() - last_request_ > ros::Duration(5.0))){
       if( set_mode_client_.call(offb_set_mode_) && offb_set_mode_.response.mode_sent){
-        ROS_INFO("Offboard enabled");
+        ROS_INFO("Setting to Offboard");
       }
       last_request_ = ros::Time::now();
     } else {
@@ -78,7 +78,7 @@ void SingleVehicle::PublishSetpoint(){
   msg.velocity.y = reference_vel_(1);
   msg.velocity.z = reference_vel_(2);
 
-  setpoint_publisher_.publish(msg);
+  // setpoint_publisher_.publish(msg);
 }
 
 void SingleVehicle::SetNameSpace(std::string vehicle_name){

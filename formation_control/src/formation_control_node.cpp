@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
   ros::NodeHandle nh("");
   ros::NodeHandle nh_private("~");
 
-  FormationController geometricController(nh, nh_private);
+  FormationController formationController(nh, nh_private);
   ros::spin();
   return 0;
 }
