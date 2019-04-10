@@ -21,6 +21,7 @@ class SingleVehicle
     ros::ServiceClient set_mode_client_;
 
     ros::Publisher setpoint_publisher_;
+    ros::Subscriber mavstateSub_;
 
     ros::Timer cmdloop_timer_;
     ros::Timer statusloop_timer_;
@@ -41,6 +42,7 @@ class SingleVehicle
 
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);
+    void mavstateCallback(const mavros_msgs::State::ConstPtr& msg);
     void PublishSetpoint();
 
   public:

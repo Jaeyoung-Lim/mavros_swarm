@@ -22,10 +22,8 @@
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 #include <mavros_msgs/CommandBool.h>
-#include <mavros_msgs/AttitudeTarget.h>
 #include <std_srvs/SetBool.h>
-#include <trajectory_msgs/MultiDOFJointTrajectoryPoint.h>
-#include <trajectory_msgs/MultiDOFJointTrajectory.h>
+
 
 #include "formation_control/single_vehicle.h"
 
@@ -36,7 +34,8 @@ class FormationController
   private:
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
-    std::vector<SingleVehicle> vehicle_vector_;
+    std::vector<std::shared_ptr<SingleVehicle>> vehicle_vector_;
+    // SingleVehicle vehicle_;
 
     ros::Timer cmdloop_timer_;
     ros::Timer statusloop_timer_;
