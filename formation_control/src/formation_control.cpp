@@ -55,7 +55,11 @@ void FormationController::cmdloopCallback(const ros::TimerEvent& event){
   formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
   d_formation_att = Qx * formation_att_;
   formation_att_ = formation_att_ + d_formation_att * loop_dt_;
-  
+  /**
+  * @todo Implement boid controller
+  * @body Implement boid controller for flocking behavior
+  */
+
   UpdateVrbVertexStates();
 
 }
