@@ -3,14 +3,22 @@
 
 MAVROS based fleet trajectory control for swarming.
 
-![multiuavsitl](mavros_swarm/resources/sitl_multi_uav.png)
+![multiuavsitl](mavros_swarm/resources/takeoff.gif)
 
 
-This project will come soon. For now, you can start the px4 multi uav sitl on gazebo using the following command.
+## Installing
+The package can be built by the following
+```
+catkin build formation_control
+```
 
+
+## Running the code
+A example can be run by the following.
 ```
 roslaunch formation_control sitl_multiuav_swarm.launch
 ```
+This automatically enables offboard mode and arms the vehicle. The three vehicles will hover in the predefined position according to the fomraiton definition
 
-# Contact
+## Contact
 Jaeyoung Lim jalim@student.ethz.ch

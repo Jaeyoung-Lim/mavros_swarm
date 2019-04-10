@@ -24,6 +24,8 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   */
   arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>("/"+vehicle_name_+"/mavros/cmd/arming");
   set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
+
+  sim_enable_ = true;
 }
 
 SingleVehicle::~SingleVehicle() {
@@ -71,13 +73,7 @@ void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vecto
 
 }
 
-
-
 void SingleVehicle::PublishSetpoint(){
-  /**
-  * @todo Fix segfault
-  * @body Currently this results in a segfault
-  */
 
   mavros_msgs::PositionTarget msg;
   msg.header.stamp = ros::Time::now();
@@ -89,8 +85,10 @@ void SingleVehicle::PublishSetpoint(){
   msg.velocity.x = reference_vel_(0);
   msg.velocity.y = reference_vel_(1);
   msg.velocity.z = reference_vel_(2);
+  msg.yaw =0.0;
+  msg.yaw_rate = 0.0;
 
-  // setpoint_publisher_.publish(msg);
+  setpoint_publisher_.publish(msg);
 }
 
 void SingleVehicle::SetNameSpace(std::string vehicle_name){

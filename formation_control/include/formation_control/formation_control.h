@@ -47,6 +47,7 @@ class FormationController
     
     int num_vehicles_;
     double loop_dt_;
+    std::string name_prefix_;
 
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);

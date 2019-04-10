@@ -9,28 +9,28 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
 : nh_(nh),
   nh_private_(nh_private),
   num_vehicles_(3),
-  loop_dt_(0.01){
+  loop_dt_(0.03){
 
   cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
+
+  nh_.param<string>("/formation_controller/name_prefix", name_prefix_, "uav");
+
   vehicle_vector_.resize(num_vehicles_);
   for(auto i = 0; i < num_vehicles_; i++){
-    std::string vehicle_name = "uav" + std::to_string(i+1);
-    /**
-    * @todo Assign arbitrary name spaces
-    * @body We need to be able to assign arbitrary name spaces
-    */
+    std::string vehicle_name = name_prefix_ + std::to_string(i+1);
     vehicle_vector_[i].reset(new SingleVehicle(nh_, nh_private_, vehicle_name));
   }
 
   formation_pos_ << 0.0, 0.0, 2.0;
   formation_angular_vel_ << 0.0, 0.0, 0.0;
-  formation_linear_vel_ << 0.0, 0.0, 0.5;
+  formation_linear_vel_ << 0.0, 0.0, 0.0;
+  formation_att_ << 1.0, 0.0, 0.0, 0.0;
 
-  vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(1.0, 0.0, 0.0));
-  vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(0.0, 1.0, 0.0));
-  vehicle_vector_[2]->SetVertexPosition(Eigen::Vector3d(-1.0, 0.0, 0.0));
+  vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(2.0, 0.0, 0.0));
+  vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(0.0, 2.0, 0.0));
+  vehicle_vector_[2]->SetVertexPosition(Eigen::Vector3d(-2.0, 0.0, 0.0));
 
 }
 
@@ -49,14 +49,14 @@ void FormationController::cmdloopCallback(const ros::TimerEvent& event){
   Eigen::Vector4d d_formation_att;
   Eigen::Vector3d omega = formation_angular_vel_;
 
-  Qx <<      0.0, -omega(0), -omega(1), -omega(2),
-         omega(0),       0.0,  omega(2), -omega(1),
-         omega(1), -omega(2),       0.0,  omega(0),
-         omega(2),  omega(1), -omega(0),       0.0;
+  // Qx <<      0.0, -omega(0), -omega(1), -omega(2),
+  //        omega(0),       0.0,  omega(2), -omega(1),
+  //        omega(1), -omega(2),       0.0,  omega(0),
+  //        omega(2),  omega(1), -omega(0),       0.0;
 
-  formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
-    d_formation_att = Qx * formation_att_;
-  formation_att_ = formation_att_ + d_formation_att * loop_dt_;
+  // formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
+    // d_formation_att = Qx * formation_att_;
+  // formation_att_ = formation_att_ + d_formation_att * loop_dt_;
   /**
   * @todo Implement boid controller
   * @body Implement boid controller for flocking behavior
