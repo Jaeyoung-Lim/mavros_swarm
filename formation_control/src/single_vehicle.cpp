@@ -16,6 +16,12 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
 
   setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
 
+  mavstateSub_ = nh_.subscribe("/"+vehicle_name_+"/mavros/state", 1, &SingleVehicle::mavstateCallback, this,ros::TransportHints().tcpNoDelay());
+
+  /**
+  * @todo Subscribe to mavstate for mode swtiching 
+  * @body Vehicle doesnt arm as the offboard mode is not observed
+  */
   arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>("/"+vehicle_name_+"/mavros/cmd/arming");
   set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
 }
@@ -55,11 +61,17 @@ void SingleVehicle::statusloopCallback(const ros::TimerEvent& event){
   }
 }
 
+void SingleVehicle::mavstateCallback(const mavros_msgs::State::ConstPtr& msg){
+    current_state_ = *msg;
+}
+
 void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity){
   reference_pos_ = ref_position;
   reference_vel_ = ref_velocity;
 
 }
+
+
 
 void SingleVehicle::PublishSetpoint(){
   /**
