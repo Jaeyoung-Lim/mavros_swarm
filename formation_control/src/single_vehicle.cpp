@@ -11,7 +11,7 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   nh_private_(nh_private),
   vehicle_name_(name) {
 
-  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.03), &SingleVehicle::cmdloopCallback, this); // Define timer for constant loop rate
+  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.01), &SingleVehicle::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &SingleVehicle::statusloopCallback, this); // Define timer for constant loop rate
 
   setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
@@ -74,10 +74,6 @@ void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vecto
 
 
 void SingleVehicle::PublishSetpoint(){
-  /**
-  * @todo Fix segfault
-  * @body Currently this results in a segfault
-  */
 
   mavros_msgs::PositionTarget msg;
   msg.header.stamp = ros::Time::now();
@@ -90,7 +86,7 @@ void SingleVehicle::PublishSetpoint(){
   msg.velocity.y = reference_vel_(1);
   msg.velocity.z = reference_vel_(2);
 
-  // setpoint_publisher_.publish(msg);
+  setpoint_publisher_.publish(msg);
 }
 
 void SingleVehicle::SetNameSpace(std::string vehicle_name){
