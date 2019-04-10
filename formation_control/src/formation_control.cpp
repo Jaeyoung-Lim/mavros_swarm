@@ -14,13 +14,12 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
+
+  nh_.param<string>("/formation_controller/name_prefix", name_prefix_, "uav");
+
   vehicle_vector_.resize(num_vehicles_);
   for(auto i = 0; i < num_vehicles_; i++){
-    std::string vehicle_name = "uav" + std::to_string(i+1);
-    /**
-    * @todo Assign arbitrary name spaces
-    * @body We need to be able to assign arbitrary name spaces
-    */
+    std::string vehicle_name = name_prefix_ + std::to_string(i+1);
     vehicle_vector_[i].reset(new SingleVehicle(nh_, nh_private_, vehicle_name));
   }
 
