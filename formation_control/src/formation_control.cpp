@@ -35,14 +35,16 @@ FormationController::~FormationController() {
 void FormationController::cmdloopCallback(const ros::TimerEvent& event){
 
   Eigen::Matrix4d Qx;
+  Eigen::Vector4d d_formation_att;
   Eigen::Vector3d omega = formation_angular_vel_;
+
   Qx <<      0.0, -omega(0), -omega(1), -omega(2),
         omega(0),       0.0,  omega(2), -omega(1),
         omega(1), -omega(2),       0.0,  omega(0),
         omega(2),  omega(1), -omega(0),       0.0;
 
-  formation_pos_ = formation_pos_ + formation_vel_ * loop_dt_;
-  d_formation_att = Qx * formation_att;
+  formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
+  d_formation_att = Qx * formation_att_;
   formation_att_ = formation_att_ + d_formation_att * loop_dt_;
   
   UpdateVrbVertexStates();
