@@ -33,6 +33,10 @@ void SingleVehicle::statusloopCallback(const ros::TimerEvent& event){
     if(sim_enable_){
     // Enable OFFBoard mode and arm automatically
     // This is only run if the vehicle is simulated
+    /**
+    * @todo Dangerous behaviros in  automatic disarming / rearming
+    * @body This will rearm the vehicle in case of a failure
+    */
     arm_cmd_.request.value = true;
     offb_set_mode_.request.custom_mode = "OFFBOARD";
     if( current_state_.mode != "OFFBOARD" && (ros::Time::now() - last_request_ > ros::Duration(5.0))){
@@ -58,6 +62,11 @@ void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vecto
 }
 
 void SingleVehicle::PublishSetpoint(){
+  /**
+  * @todo Fix segfault
+  * @body Currently this results in a segfault
+  */
+
   mavros_msgs::PositionTarget msg;
   msg.header.stamp = ros::Time::now();
   msg.header.frame_id = "map";

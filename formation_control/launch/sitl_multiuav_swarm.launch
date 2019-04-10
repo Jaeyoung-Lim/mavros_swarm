@@ -1,4 +1,8 @@
 <launch>
+
+  <node pkg="formation_control" type="formation_control_node" name="formation_control_node" output="screen">
+  </node>
+
   <include file="$(find px4)/launch/multi_uav_mavros_sitl.launch">
   </include>
 

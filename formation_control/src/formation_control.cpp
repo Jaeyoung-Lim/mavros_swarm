@@ -8,12 +8,17 @@ using namespace std;
 FormationController::FormationController(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private):
   nh_(nh),
   nh_private_(nh_private),
-  num_vehicles_(3) {
+  num_vehicles_(3),
+  loop_dt_(0.01) {
 
-  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.03), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
+  cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
   for(int i = 0; i < num_vehicles_; i++){
+    /**
+    * @todo Assign arbitrary name spaces
+    * @body We need to be able to assign arbitrary name spaces
+    */
     vehicle_vector_.emplace_back(nh_, nh_private_, "uav" + std::to_string(i+1));
   }
 
@@ -32,6 +37,25 @@ FormationController::~FormationController() {
 }
 
 void FormationController::cmdloopCallback(const ros::TimerEvent& event){
+
+    /**
+    * @todo Get formation reference from a proper interface
+    * @body Get rid of the formation states being updated automatically
+    */
+
+  Eigen::Matrix4d Qx;
+  Eigen::Vector4d d_formation_att;
+  Eigen::Vector3d omega = formation_angular_vel_;
+
+  Qx <<      0.0, -omega(0), -omega(1), -omega(2),
+        omega(0),       0.0,  omega(2), -omega(1),
+        omega(1), -omega(2),       0.0,  omega(0),
+        omega(2),  omega(1), -omega(0),       0.0;
+
+  formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
+  d_formation_att = Qx * formation_att_;
+  formation_att_ = formation_att_ + d_formation_att * loop_dt_;
+  
   UpdateVrbVertexStates();
 
 }

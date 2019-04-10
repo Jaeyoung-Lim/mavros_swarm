@@ -47,6 +47,7 @@ class FormationController
     Eigen::Vector3d formation_angular_vel_;
     
     int num_vehicles_;
+    double loop_dt_;
 
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);
