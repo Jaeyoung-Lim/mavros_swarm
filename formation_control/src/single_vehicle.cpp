@@ -11,7 +11,7 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   nh_private_(nh_private),
   vehicle_name_(name) {
 
-  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.01), &SingleVehicle::cmdloopCallback, this); // Define timer for constant loop rate
+  cmdloop_timer_ = nh_.createTimer(ros::Duration(0.03), &SingleVehicle::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &SingleVehicle::statusloopCallback, this); // Define timer for constant loop rate
 
   setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
@@ -24,6 +24,8 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   */
   arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>("/"+vehicle_name_+"/mavros/cmd/arming");
   set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
+
+  sim_enable_ = true;
 }
 
 SingleVehicle::~SingleVehicle() {
@@ -71,8 +73,6 @@ void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vecto
 
 }
 
-
-
 void SingleVehicle::PublishSetpoint(){
 
   mavros_msgs::PositionTarget msg;
@@ -85,6 +85,8 @@ void SingleVehicle::PublishSetpoint(){
   msg.velocity.x = reference_vel_(0);
   msg.velocity.y = reference_vel_(1);
   msg.velocity.z = reference_vel_(2);
+  msg.yaw =0.0;
+  msg.yaw_rate = 0.0;
 
   setpoint_publisher_.publish(msg);
 }
