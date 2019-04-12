@@ -1,9 +1,14 @@
-//  July/2018, ETHZ, Jaeyoung Lim, jalim@student.ethz.ch
+//  April/2019, ETHZ, Jaeyoung Lim, jalim@student.ethz.ch
 
 #include "formation_control/single_vehicle.h"
 
 
 //Constructor
+SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
+                             const ros::NodeHandle& nh_private)
+  : SingleVehicle(nh, nh_private, "uav1") {}
+
+
 SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
                              const ros::NodeHandle& nh_private,
                              std::string name):

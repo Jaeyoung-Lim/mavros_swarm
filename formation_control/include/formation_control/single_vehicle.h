@@ -46,6 +46,7 @@ class SingleVehicle
     void PublishSetpoint();
 
   public:
+    SingleVehicle(const ros::NodeHandle& nh, const ros::NodeHandle&);
     SingleVehicle(const ros::NodeHandle& nh, const ros::NodeHandle& nh_private, std::string name);
     virtual ~SingleVehicle();
     void SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity);
