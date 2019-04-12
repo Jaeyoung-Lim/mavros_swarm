@@ -26,6 +26,12 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
 
   sim_enable_ = true;
+
+  initial_pos_ << 0.0, 0.0, 0.0;
+  reference_pos_ << 0.0, 0.0, 0.0;
+  reference_vel_ << 0.0, 0.0, 0.0;
+  local_reference_pos_ << 0.0, 0.0, 0.0;
+  local_reference_vel_ << 0.0, 0.0, 0.0;
 }
 
 SingleVehicle::~SingleVehicle() {
@@ -70,6 +76,8 @@ void SingleVehicle::mavstateCallback(const mavros_msgs::State::ConstPtr& msg){
 void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vector3d ref_velocity){
   reference_pos_ = ref_position;
   reference_vel_ = ref_velocity;
+  local_reference_pos_ = reference_pos_ - initial_pos_;
+  local_reference_vel_ = reference_vel_;
 
 }
 
@@ -79,12 +87,12 @@ void SingleVehicle::PublishSetpoint(){
   msg.header.stamp = ros::Time::now();
   msg.header.frame_id = "map";
   msg.type_mask = 64;
-  msg.position.x = reference_pos_(0);
-  msg.position.y = reference_pos_(1);
-  msg.position.z = reference_pos_(2);
-  msg.velocity.x = reference_vel_(0);
-  msg.velocity.y = reference_vel_(1);
-  msg.velocity.z = reference_vel_(2);
+  msg.position.x = local_reference_pos_(0);
+  msg.position.y = local_reference_pos_(1);
+  msg.position.z = local_reference_pos_(2);
+  msg.velocity.x = local_reference_vel_(0);
+  msg.velocity.y = local_reference_vel_(1);
+  msg.velocity.z = local_reference_vel_(2);
   msg.yaw =0.0;
   msg.yaw_rate = 0.0;
 
@@ -98,6 +106,11 @@ void SingleVehicle::SetNameSpace(std::string vehicle_name){
 
 void SingleVehicle::SetVertexPosition(Eigen::Vector3d position){
     vrb_vertexpos_ = position;
+
+}
+
+void SingleVehicle::SetInitialPosition(Eigen::Vector3d position){
+  initial_pos_ = position;
 
 }
 

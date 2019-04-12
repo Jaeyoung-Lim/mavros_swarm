@@ -14,7 +14,6 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
-
   nh_.param<string>("/formation_controller/name_prefix", name_prefix_, "uav");
 
   vehicle_vector_.resize(num_vehicles_);
@@ -27,11 +26,16 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   formation_angular_vel_ << 0.0, 0.0, 0.0;
   formation_linear_vel_ << 0.0, 0.0, 0.0;
   formation_att_ << 1.0, 0.0, 0.0, 0.0;
-
-  vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(2.0, 0.0, 0.0));
-  vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(0.0, 2.0, 0.0));
-  vehicle_vector_[2]->SetVertexPosition(Eigen::Vector3d(-2.0, 0.0, 0.0));
-
+  double radius = 2.0;
+  vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(radius * std::cos(3.14 * 2/3), radius * std::cos(3.14 * 2/3), 0.0));
+  vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(radius, 0.0, 0.0));
+  vehicle_vector_[2]->SetVertexPosition(Eigen::Vector3d(radius * std::cos(3.14 * 4/3), radius * std::cos(3.14 * 4/3), 0.0));
+  //TODO: Read initial positions from parameter file
+  vehicle_vector_[0]->SetInitialPosition(Eigen::Vector3d(1.0, 0.0, 0.0));
+  vehicle_vector_[1]->SetInitialPosition(Eigen::Vector3d(0.0, 1.0, 0.0));
+  vehicle_vector_[2]->SetInitialPosition(Eigen::Vector3d(0.0, 0.0, 0.0));
+  //TODO: Automatically initialize positions from GPS coordinates
+  
 }
 
 FormationController::~FormationController() {
