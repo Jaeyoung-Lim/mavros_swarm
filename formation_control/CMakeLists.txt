@@ -24,6 +24,12 @@ cs_add_executable(formation_control_node
   src/formation_control_node.cpp
 )
 target_link_libraries(formation_control_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+
+cs_add_executable(single_vehicle_node
+  src/single_vehicle_node.cpp
+)
+target_link_libraries(single_vehicle_node ${PROJECT_NAME} ${catkin_LIBRARIES})
+
 ##########
 # EXPORT #
 ##########
