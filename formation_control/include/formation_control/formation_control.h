@@ -44,6 +44,7 @@ class FormationController
     Eigen::Vector4d formation_att_;
     Eigen::Vector3d formation_linear_vel_;
     Eigen::Vector3d formation_angular_vel_;
+    Eigen::Vector3d global_origin_;
     
     int num_vehicles_;
     double loop_dt_;

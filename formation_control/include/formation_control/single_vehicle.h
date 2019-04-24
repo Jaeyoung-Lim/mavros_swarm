@@ -41,9 +41,10 @@ class SingleVehicle
     Eigen::Vector3d local_reference_vel_; // Vehicle velocity in world coordinate
     Eigen::Vector3d vrb_vertexpos_; // Vehicle position in virtual rigid body coordinate
     Eigen::Vector3d initial_pos_; //Initial vehicle poistion with respect to the world frame
-
+    Eigen::Vector3d global_origin_;
     bool sim_enable_;
     double loop_dt_;
+    
     std::string vehicle_name_;
 
     void cmdloopCallback(const ros::TimerEvent& event);
@@ -58,6 +59,7 @@ class SingleVehicle
     void SetNameSpace(std::string vehicle_name);
     void SetVertexPosition(Eigen::Vector3d position);
     void SetInitialPosition(Eigen::Vector3d position);
+    void SetGlobalOrigin(Eigen::Vector3d origin);
     Eigen::Vector3d GetVertexPosition();
     
 };

@@ -114,4 +114,9 @@ void SingleVehicle::SetInitialPosition(Eigen::Vector3d position){
 
 }
 
+void SingleVehicle::SetGlobalOrigin(Eigen::Vector3d origin){
+
+  geod_converter_.initialiseReference(origin(0), origin(1), origin(2));
+}
+
 Eigen::Vector3d SingleVehicle::GetVertexPosition(){ return vrb_vertexpos_; }

@@ -14,12 +14,20 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
+  double global_origin_latitude, global_origin_longitude, global_origin_altitude;
+
   nh_.param<string>("/formation_controller/name_prefix", name_prefix_, "uav");
+  nh_private_.param<double>("global_origin_latitude", global_origin_latitude, 47.397742 * M_PI / 180.0); //Default global origin: zurich park in SITL
+  nh_private_.param<double>("global_origin_longitude", global_origin_longitude, 8.545594 * M_PI / 180.0);
+  nh_private_.param<double>("global_origin_altitude", global_origin_altitude, 488.0);
+
+  global_origin_ << global_origin_latitude, global_origin_longitude, global_origin_altitude;
 
   vehicle_vector_.resize(num_vehicles_);
   for(auto i = 0; i < num_vehicles_; i++){
     std::string vehicle_name = name_prefix_ + std::to_string(i+1);
     vehicle_vector_[i].reset(new SingleVehicle(nh_, nh_private_, vehicle_name));
+    vehicle_vector_.back()->SetGlobalOrigin(global_origin_);
   }
 
   formation_pos_ << 0.0, 0.0, 2.0;
@@ -34,7 +42,6 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   vehicle_vector_[0]->SetInitialPosition(Eigen::Vector3d(1.0, 0.0, 0.0));
   vehicle_vector_[1]->SetInitialPosition(Eigen::Vector3d(0.0, 1.0, 0.0));
   vehicle_vector_[2]->SetInitialPosition(Eigen::Vector3d(0.0, 0.0, 0.0));
-  //TODO: Automatically initialize positions from GPS coordinates
   
 }
 
