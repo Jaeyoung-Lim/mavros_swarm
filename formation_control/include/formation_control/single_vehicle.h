@@ -9,6 +9,7 @@
 #include "mavros_msgs/SetMode.h"
 #include "mavros_msgs/CommandBool.h"
 #include "Eigen/Dense"
+#include "geodetic_utils/geodetic_conv.hpp"
 
 
 class SingleVehicle
@@ -31,6 +32,8 @@ class SingleVehicle
     mavros_msgs::State current_state_;
     mavros_msgs::SetMode offb_set_mode_;
     mavros_msgs::CommandBool arm_cmd_;
+
+    geodetic_converter::GeodeticConverter geod_converter_;
 
     Eigen::Vector3d reference_pos_; // Vehicle position in world coordinate
     Eigen::Vector3d reference_vel_; // Vehicle velocity in world coordinate
