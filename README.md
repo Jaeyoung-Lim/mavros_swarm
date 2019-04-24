@@ -7,11 +7,18 @@ MAVROS based fleet trajectory control for swarming.
 
 
 ## Installing
+Install the dependencies
+```
+cd ~/catkin_ws/src
+wstool init . ./mavros_swarm/dependencies.rosinstall 
+wstool update -t src -j4
+```
+If you have already initialized `wstool` replace `wstool init` with `wstool merge`
+
 The package can be built by the following
 ```
 catkin build formation_control
 ```
-
 
 ## Running the code
 A example can be run by the following.
