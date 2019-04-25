@@ -27,7 +27,7 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   for(auto i = 0; i < num_vehicles_; i++){
     std::string vehicle_name = name_prefix_ + std::to_string(i+1);
     vehicle_vector_[i].reset(new SingleVehicle(nh_, nh_private_, vehicle_name));
-    vehicle_vector_.back()->SetGlobalOrigin(global_origin_);
+    vehicle_vector_[i]->SetGlobalOrigin(global_origin_);
   }
 
   formation_pos_ << 0.0, 0.0, 2.0;
