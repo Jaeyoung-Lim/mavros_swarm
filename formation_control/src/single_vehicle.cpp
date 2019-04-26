@@ -17,7 +17,7 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   localsetpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
 
   mavstateSub_ = nh_.subscribe("/"+vehicle_name_+"/mavros/state", 1, &SingleVehicle::mavstateCallback, this,ros::TransportHints().tcpNoDelay());
-  homeposSub_ = nh_.subscribe("/"+vehicle_name_+"/mavros/home", 1, &SingleVehicle::HomePosCallback, this,ros::TransportHints().tcpNoDelay());
+  homeposSub_ = nh_.subscribe("/"+vehicle_name_+"/mavros/home_position/home", 1, &SingleVehicle::HomePosCallback, this,ros::TransportHints().tcpNoDelay());
 
   arming_client_ = nh_.serviceClient<mavros_msgs::CommandBool>("/"+vehicle_name_+"/mavros/cmd/arming");
   set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
@@ -29,6 +29,7 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   reference_vel_ << 0.0, 0.0, 0.0;
   local_reference_pos_ << 0.0, 0.0, 0.0;
   local_reference_vel_ << 0.0, 0.0, 0.0;
+  global2local_origin_ << 0.0, 0.0, 0.0;
 }
 
 SingleVehicle::~SingleVehicle() {
