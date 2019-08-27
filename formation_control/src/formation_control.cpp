@@ -23,14 +23,17 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
     vehicle_vector_[i].reset(new SingleVehicle(nh_, nh_private_, vehicle_name));
   }
 
-  formation_pos_ << 0.0, 0.0, 2.0;
+  formation_pos_ << 0.0, 0.0, 10.0;
   formation_angular_vel_ << 0.0, 0.0, 0.0;
   formation_linear_vel_ << 0.0, 0.0, 0.0;
   formation_att_ << 1.0, 0.0, 0.0, 0.0;
+  global_origin_ << 47.397742, 8.545594, 488;
 
   vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(2.0, 0.0, 0.0));
   vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(0.0, 2.0, 0.0));
   vehicle_vector_[2]->SetVertexPosition(Eigen::Vector3d(-2.0, 0.0, 0.0));
+
+  geod_converter_global_origin_.initialiseReference(global_origin_(0), global_origin_(1), global_origin_(2));
 
 }
 
@@ -73,13 +76,16 @@ void FormationController::statusloopCallback(const ros::TimerEvent& event){
 void FormationController::UpdateVrbVertexStates(){
   //Update vertex states on virtual rigid body
   for(int i = 0; i < num_vehicles_; i++){
-    Eigen::Vector3d vehicle_pos;
+    Eigen::Vector3d vehicle_pos, global_vehicle_pos;
     Eigen::Vector3d vehicle_vel;
     Eigen::Vector3d vertex_position;
 
     vertex_position = vehicle_vector_[i]->GetVertexPosition();
     CalculateVertexStates(vertex_position, vehicle_pos, vehicle_vel);
-    vehicle_vector_[i]->SetReferenceState(vehicle_pos, vehicle_vel);
+    if(geod_converter_global_origin_.isInitialised()){
+      geod_converter_global_origin_.enu2Geodetic(vehicle_pos(0), vehicle_pos(1), vehicle_pos(2), &global_vehicle_pos(0), &global_vehicle_pos(1), &global_vehicle_pos(2));
+    }
+    vehicle_vector_[i]->SetReferenceState(global_vehicle_pos, vehicle_vel);
   }
 }
 

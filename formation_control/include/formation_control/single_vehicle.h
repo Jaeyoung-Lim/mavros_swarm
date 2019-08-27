@@ -11,6 +11,11 @@
 #include "mavros_msgs/CommandBool.h"
 #include "Eigen/Dense"
 
+enum SETPOINT_TYPE
+{
+    LOCAL_SETPOINT,
+    GLOBAL_SETPOINT
+};
 
 class SingleVehicle
 {
@@ -21,13 +26,16 @@ class SingleVehicle
     ros::ServiceClient arming_client_;
     ros::ServiceClient set_mode_client_;
 
-    ros::Publisher setpoint_publisher_;
+    ros::Publisher localsetpoint_publisher_;
+    ros::Publisher globalsetpoint_publisher_;
     ros::Subscriber mavstateSub_;
 
     ros::Timer cmdloop_timer_;
     ros::Timer statusloop_timer_;
 
     ros::Time last_request_;
+
+    SETPOINT_TYPE setpoint_type_;
 
     mavros_msgs::State current_state_;
     mavros_msgs::SetMode offb_set_mode_;
