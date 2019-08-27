@@ -5,6 +5,7 @@
 
 #include <ros/ros.h>
 #include "mavros_msgs/PositionTarget.h"
+#include "mavros_msgs/GlobalPositionTarget.h"
 #include "mavros_msgs/State.h"
 #include "mavros_msgs/SetMode.h"
 #include "mavros_msgs/CommandBool.h"
@@ -43,7 +44,8 @@ class SingleVehicle
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);
     void mavstateCallback(const mavros_msgs::State::ConstPtr& msg);
-    void PublishSetpoint();
+    void PublishGlobalSetpoint();
+    void PublishLocalSetpoint();
 
   public:
     SingleVehicle(const ros::NodeHandle& nh, const ros::NodeHandle&);
