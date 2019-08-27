@@ -20,7 +20,7 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &SingleVehicle::statusloopCallback, this); // Define timer for constant loop rate
 
   localsetpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
-  globalsetpoint_publisher_ = nh_.advertise<mavros_msgs::GlobalPositionTarget>("/"+vehicle_name_+"/mavros/setpoint_position/global", 1);
+  globalsetpoint_publisher_ = nh_.advertise<mavros_msgs::GlobalPositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/global", 1);
 
   mavstateSub_ = nh_.subscribe("/"+vehicle_name_+"/mavros/state", 1, &SingleVehicle::mavstateCallback, this,ros::TransportHints().tcpNoDelay());
 
