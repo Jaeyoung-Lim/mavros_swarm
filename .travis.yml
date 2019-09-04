@@ -72,9 +72,9 @@ before_install:
   - sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
   - sudo apt-get update -qq
   - sudo apt-get install dpkg
-  - sudo apt-get install -y python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-ros-base
-  - sudo apt-get install -y python-catkin-tools python-rosinstall-generator ros-$ROS_DISTRO-geographic-msgs -y
-  - sudo apt-get install -y ros-kinetic-mavros ros-kinetic-mavros-extras libeigen3-dev geographiclib-tools libgeographic-dev ros-$ROS_DISTRO-gazebo-msgs
+  - sudo apt-get install -y --allow-unauthenticated python-catkin-pkg python-rosdep python-wstool ros-$ROS_DISTRO-ros-base
+  - sudo apt-get install -y --allow-unauthenticated python-catkin-tools python-rosinstall-generator ros-$ROS_DISTRO-geographic-msgs -y
+  - sudo apt-get install -y --allow-unauthenticated ros-kinetic-mavros ros-kinetic-mavros-extras libeigen3-dev geographiclib-tools libgeographic-dev ros-$ROS_DISTRO-gazebo-msgs
   - source /opt/ros/$ROS_DISTRO/setup.bash
   # Prepare rosdep to install dependencies.
   - sudo rosdep init

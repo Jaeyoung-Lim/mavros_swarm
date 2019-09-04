@@ -23,7 +23,7 @@
 #include <mavros_msgs/State.h>
 #include <mavros_msgs/CommandBool.h>
 #include <std_srvs/SetBool.h>
-
+#include "geodetic_utils/geodetic_conv.hpp"
 
 #include "formation_control/single_vehicle.h"
 
@@ -44,6 +44,9 @@ class FormationController
     Eigen::Vector4d formation_att_;
     Eigen::Vector3d formation_linear_vel_;
     Eigen::Vector3d formation_angular_vel_;
+    Eigen::Vector3d global_origin_;
+  
+    geodetic_converter::GeodeticConverter geod_converter_global_origin_;
     
     int num_vehicles_;
     double loop_dt_;

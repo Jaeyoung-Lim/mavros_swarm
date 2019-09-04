@@ -19,7 +19,8 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   cmdloop_timer_ = nh_.createTimer(ros::Duration(0.03), &SingleVehicle::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &SingleVehicle::statusloopCallback, this); // Define timer for constant loop rate
 
-  setpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
+  localsetpoint_publisher_ = nh_.advertise<mavros_msgs::PositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/local", 1);
+  globalsetpoint_publisher_ = nh_.advertise<mavros_msgs::GlobalPositionTarget>("/"+vehicle_name_+"/mavros/setpoint_raw/global", 1);
 
   mavstateSub_ = nh_.subscribe("/"+vehicle_name_+"/mavros/state", 1, &SingleVehicle::mavstateCallback, this,ros::TransportHints().tcpNoDelay());
 
@@ -31,6 +32,7 @@ SingleVehicle::SingleVehicle(const ros::NodeHandle& nh,
   set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("/"+vehicle_name_+"/mavros/set_mode");
 
   sim_enable_ = true;
+  setpoint_type_ = SETPOINT_TYPE::GLOBAL_SETPOINT;
 }
 
 SingleVehicle::~SingleVehicle() {
@@ -38,8 +40,16 @@ SingleVehicle::~SingleVehicle() {
 }
 
 void SingleVehicle::cmdloopCallback(const ros::TimerEvent& event){
-  PublishSetpoint();
+  switch(setpoint_type_){
+    case SETPOINT_TYPE::LOCAL_SETPOINT :
+      PublishLocalSetpoint();
+      break;
+    
+    case SETPOINT_TYPE::GLOBAL_SETPOINT :
+      PublishGlobalSetpoint();
+      break;
 
+  }
 }
 
 void SingleVehicle::statusloopCallback(const ros::TimerEvent& event){
@@ -78,7 +88,7 @@ void SingleVehicle::SetReferenceState(Eigen::Vector3d ref_position, Eigen::Vecto
 
 }
 
-void SingleVehicle::PublishSetpoint(){
+void SingleVehicle::PublishLocalSetpoint(){
 
   mavros_msgs::PositionTarget msg;
   msg.header.stamp = ros::Time::now();
@@ -93,7 +103,25 @@ void SingleVehicle::PublishSetpoint(){
   msg.yaw =0.0;
   msg.yaw_rate = 0.0;
 
-  setpoint_publisher_.publish(msg);
+  localsetpoint_publisher_.publish(msg);
+}
+
+void SingleVehicle::PublishGlobalSetpoint(){
+
+  mavros_msgs::GlobalPositionTarget msg;
+  msg.header.stamp = ros::Time::now();
+  msg.header.frame_id = "map";
+  msg.type_mask = 64;
+  msg.latitude = reference_pos_(0);
+  msg.longitude = reference_pos_(1);
+  msg.altitude = reference_pos_(2);
+  msg.velocity.x = reference_vel_(0);
+  msg.velocity.y = reference_vel_(1);
+  msg.velocity.z = reference_vel_(2);
+  msg.yaw =0.0;
+  msg.yaw_rate = 0.0;
+
+  globalsetpoint_publisher_.publish(msg);
 }
 
 void SingleVehicle::SetNameSpace(std::string vehicle_name){
