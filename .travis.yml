@@ -103,7 +103,7 @@ before_script:
   # - rosinstall_generator --rosdistro kinetic mavlink | tee /tmp/mavros.rosinstall
   # - rosinstall_generator --upstream mavros --deps | tee -a /tmp/mavros.rosinstall
   # - wstool merge -y -t src /tmp/mavros.rosinstall
-  - wstool merge -t src $ROSINSTALL_FILE
+  - wstool merge -y -t src $ROSINSTALL_FILE
   - wstool update -t src -j4
   # package depdencies: install using rosdep.
   - rosdep install --from-paths src --ignore-src -y --rosdistro $ROS_DISTRO
