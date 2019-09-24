@@ -34,6 +34,9 @@ class FormationController
   private:
     ros::NodeHandle nh_;
     ros::NodeHandle nh_private_;
+
+    ros::Subscriber formation_pose_sp_sub_;
+
     std::vector<std::shared_ptr<SingleVehicle>> vehicle_vector_;
     // SingleVehicle vehicle_;
 
@@ -54,6 +57,7 @@ class FormationController
 
     void cmdloopCallback(const ros::TimerEvent& event);
     void statusloopCallback(const ros::TimerEvent& event);
+    void FormationPoseCallback(const geometry_msgs::PoseStamped& msg);
     void UpdateVrbVertexStates();
     void CalculateVertexStates(Eigen::Vector3d vrb_position, Eigen::Vector3d &pos, Eigen::Vector3d &vel);
     Eigen::Vector4d rot2Quaternion(Eigen::Matrix3d R);
