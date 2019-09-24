@@ -14,6 +14,7 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   cmdloop_timer_ = nh_.createTimer(ros::Duration(loop_dt_), &FormationController::cmdloopCallback, this); // Define timer for constant loop rate
   statusloop_timer_ = nh_.createTimer(ros::Duration(1), &FormationController::statusloopCallback, this); // Define timer for constant loop rate
 
+  formation_pose_sp_sub_ = nh_.subscribe("/formation_controller/formation_pose", 1, &FormationController::FormationPoseCallback, this,ros::TransportHints().tcpNoDelay());
 
   nh_.param<string>("/formation_controller/name_prefix", name_prefix_, "uav");
 
@@ -43,23 +44,6 @@ FormationController::~FormationController() {
 
 void FormationController::cmdloopCallback(const ros::TimerEvent& event){
 
-    /**
-    * @todo Get formation reference from a proper interface
-    * @body Get rid of the formation states being updated automatically
-    */
-
-  Eigen::Matrix4d Qx;
-  Eigen::Vector4d d_formation_att;
-  Eigen::Vector3d omega = formation_angular_vel_;
-
-  Qx <<      0.0, -omega(0), -omega(1), -omega(2),
-         omega(0),       0.0,  omega(2), -omega(1),
-         omega(1), -omega(2),       0.0,  omega(0),
-         omega(2),  omega(1), -omega(0),       0.0;
-
-  formation_pos_ = formation_pos_ + formation_linear_vel_ * loop_dt_;
-  d_formation_att = Qx * formation_att_;
-  formation_att_ = formation_att_ + d_formation_att * loop_dt_;
   /**
   * @todo Implement boid controller
   * @body Implement boid controller for flocking behavior
@@ -70,6 +54,17 @@ void FormationController::cmdloopCallback(const ros::TimerEvent& event){
 }
 
 void FormationController::statusloopCallback(const ros::TimerEvent& event){
+
+}
+
+void FormationController::FormationPoseCallback(const geometry_msgs::PoseStamped& msg){
+  formation_pos_(0) = msg.pose.position.x;
+  formation_pos_(1) = msg.pose.position.y;
+  formation_pos_(2) = msg.pose.position.z;
+  formation_att_(0) = msg.pose.orientation.w;
+  formation_att_(1) = msg.pose.orientation.x;
+  formation_att_(2) = msg.pose.orientation.y;
+  formation_att_(3) = msg.pose.orientation.z;
 
 }
 
