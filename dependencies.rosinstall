@@ -3,3 +3,4 @@
 - git: {local-name: eigen_catkin, uri: 'https://github.com/ethz-asl/eigen_catkin'}
 - git: {local-name: geodetic_utils, uri: 'https://github.com/ethz-asl/geodetic_utils.git'}
 - git: {local-name: mavros, uri: 'https://github.com/mavlink/mavros.git'}
+- git: {local-name: mavlink, uri: 'https://github.com/mavlink/mavlink-gbp-release.git', version: 130565ce15d83621a841e7df53fbe4d5b6841bd4}
