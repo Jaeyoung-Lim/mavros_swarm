@@ -1,0 +1,19 @@
+<launch>
+
+  <include file="$(find px4)/launch/multi_uav_mavros_sitl.launch">
+  </include>
+
+  <node pkg="reciprocal_avoidance" type="single_vehicle_node" name="single_vehicle_node0" output="screen">
+    <param name="vehicle_name" value="uav0" />
+  </node>
+
+  <!-- <node pkg="reciprocal_avoidance" type="single_vehicle_node" name="single_vehicle_node1" output="screen">
+    <param name="vehicle_name" value="uav1" />
+  </node>
+
+  <node pkg="reciprocal_avoidance" type="single_vehicle_node" name="single_vehicle_node2" output="screen">
+    <param name="vehicle_name" value="uav2" />
+  </node> -->
+
+
+</launch>
