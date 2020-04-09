@@ -28,7 +28,7 @@ FormationController::FormationController(const ros::NodeHandle& nh, const ros::N
   formation_angular_vel_ << 0.0, 0.0, 0.3;
   formation_linear_vel_ << 0.0, 0.0, 0.0;
   formation_att_ << 1.0, 0.0, 0.0, 0.0;
-  global_origin_ << 47.397742, 8.545594, 488;
+  global_origin_ << 47.397742, 8.545594, 2.0;
 
   vehicle_vector_[0]->SetVertexPosition(Eigen::Vector3d(2.0, 0.0, 0.0));
   vehicle_vector_[1]->SetVertexPosition(Eigen::Vector3d(-2.0, 0.0, 0.0));
